@@ -32,9 +32,11 @@ jobs:
       run: Set-LocalUser -Name runneradmin -Password (ConvertTo-SecureString -AsPlainText P@ssw0rd! -Force)
 
     - name: Start Tunnel
+      shell: cmd
       run: |
-        Start-Process -NoNewWindow -FilePath .\ngrok\ngrok.exe -ArgumentList tcp 3389 -RedirectStandardOutput $env:TEMP\tunnel.txt
-        Start-Sleep -Seconds 15
-        Get-Content $env:TEMP\tunnel.txt
+        .\ngrok\ngrok.exe tcp 3389 > %TEMP%\tunnel.txt 2>&1
+        timeout /t 15 /nobreak > nul
+        type %TEMP%\tunnel.txt
     - name: Keep Alive
-      run: Start-Sleep -Seconds 21600
+      shell: cmd
+      run: timeout /t 21600 /nobreak > nul
